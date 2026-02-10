@@ -24,14 +24,54 @@ export default function Quiz() {
     fetchQuestions();
   }, [lessonId]);
 
-  const handleAnswer = (index: number) => {
-    if (index === questions[current].correct_answer) {
-      setScore(score + 1);
+  const handleAnswer = async (index: number) => {
+    const isCorrect = index === questions[current].correct_answer;
+    const newScore = isCorrect ? score + 1 : score;
+
+    if (isCorrect) {
+      setScore(newScore);
     }
+
     if (current < questions.length - 1) {
       setCurrent(current + 1);
     } else {
       setFinished(true);
+
+      // Save progress
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user) {
+        // Check if progress exists
+        const { data: existing } = await supabase
+          .from('user_progress')
+          .select('id')
+          .eq('user_id', user.id)
+          .eq('lesson_id', lessonId)
+          .maybeSingle();
+
+        let error;
+        if (existing) {
+          const { error: updateError } = await supabase
+            .from('user_progress')
+            .update({ completed: true, score: newScore })
+            .eq('id', existing.id);
+          error = updateError;
+        } else {
+          const { error: insertError } = await supabase
+            .from('user_progress')
+            .insert({
+              user_id: user.id,
+              lesson_id: lessonId,
+              completed: true,
+              score: newScore
+            });
+          error = insertError;
+        }
+
+        if (error) {
+          console.error('Error saving progress:', error);
+          alert(`Ошибка сохранения прогресса: ${error.message}`);
+        }
+      }
     }
   };
 
