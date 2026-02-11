@@ -3,7 +3,9 @@
 import { useEffect, useState } from 'react'
 import dynamic from 'next/dynamic'
 import Slider from 'rc-slider'
+import Tooltip from 'rc-tooltip'
 import 'rc-slider/assets/index.css'
+// 'rc-tooltip/assets/bootstrap.css' — опционально, если нужны дополнительные стили тултипа
 
 const LeafletMap = dynamic(() => import('./LeafletMap'), { ssr: false })
 
@@ -63,10 +65,16 @@ export default function BattleMap() {
             else setYearRange([Number(val), Number(val)])
           }}
           allowCross={false}
-          tooltip={{
-            formatter: val => `${val}`,
-            // open: true, // раскомментируйте, если хотите, чтобы тултип был всегда видим (не только при hover/drag)
-          }}
+          handleRender={(node, props) => (
+            <Tooltip
+              prefixCls="rc-slider-tooltip" // используем префикс из стилей rc-slider для одинакового вида
+              overlay={`${props.value}`}
+              visible={props.dragging} // тултип видно только при перетаскивании (как в большинстве слайдеров)
+              placement="top"
+            >
+              {node}
+            </Tooltip>
+          )}
         />
         <div className="flex justify-between mt-1 text-sm">
           <span>{yearRange[0]}</span>
