@@ -2,10 +2,10 @@
 
 import { useEffect, useState } from 'react'
 import dynamic from 'next/dynamic'
+import Slider from 'rc-slider'
+import 'rc-slider/assets/index.css'
 
-const LeafletMap = dynamic(() => import('./LeafletMap'), {
-  ssr: false,
-})
+const LeafletMap = dynamic(() => import('./LeafletMap'), { ssr: false })
 
 type Battle = {
   id: string
@@ -19,36 +19,55 @@ type Battle = {
 
 export default function BattleMap() {
   const [battles, setBattles] = useState<Battle[]>([])
-  const [from, setFrom] = useState(1000)
-  const [to, setTo] = useState(1900)
+  const [yearRange, setYearRange] = useState<[number, number]>([1000, 1900])
 
   useEffect(() => {
-    fetch(`/api/battles?from=${from}&to=${to}`)
-      .then(res => res.json())
-      .then(data => setBattles(data))
-  }, [from, to])
+    const from = yearRange?.[0]
+    const to = yearRange?.[1]
+    if (typeof from !== 'number' || typeof to !== 'number') {
+      console.warn('invalid yearRange, skipping fetch', yearRange)
+      setBattles([])
+      return
+    }
+
+    const controller = new AbortController()
+    fetch(`/api/battles?from=${from}&to=${to}`, { signal: controller.signal })
+      .then(res => {
+        if (!res.ok) throw new Error(`API error ${res.status}`)
+        return res.json()
+      })
+      .then(data => setBattles(Array.isArray(data) ? data : []))
+      .catch(err => {
+        if (err && (err.name === 'AbortError' || err.message === 'The user aborted a request.')) {
+          // fetch was aborted by cleanup (common when slider changes quickly) — ignore
+          return
+        }
+        console.error('failed to fetch battles', err)
+        setBattles([])
+      })
+
+    return () => controller.abort()
+  }, [yearRange])
 
   return (
     <div className="space-y-6">
-      <div className="flex gap-4">
-        <div>
-          <label className="block text-sm">От</label>
-          <input
-            type="number"
-            value={from}
-            onChange={e => setFrom(Number(e.target.value))}
-            className="border rounded px-2 py-1"
-          />
-        </div>
-
-        <div>
-          <label className="block text-sm">До</label>
-          <input
-            type="number"
-            value={to}
-            onChange={e => setTo(Number(e.target.value))}
-            className="border rounded px-2 py-1"
-          />
+      <div>
+        <h2 className="font-bold mb-2">Выберите период</h2>
+        <Slider
+          range
+          min={1000}
+          max={1900}
+          value={yearRange}
+          onChange={val => {
+            if (Array.isArray(val)) setYearRange(val as [number, number])
+            else setYearRange([Number(val), Number(val)])
+          }}
+          allowCross={false}
+          tipFormatter={val => `${val}`}
+        />
+        <div className="flex justify-between mt-1 text-sm">
+          <span>{yearRange[0]}</span>
+          <span>{yearRange[1]}</span>
         </div>
       </div>
 
