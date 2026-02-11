@@ -63,7 +63,10 @@ export default function BattleMap() {
             else setYearRange([Number(val), Number(val)])
           }}
           allowCross={false}
-          tipFormatter={val => `${val}`}
+          tooltip={{
+            formatter: val => `${val}`,
+            // open: true, // раскомментируйте, если хотите, чтобы тултип был всегда видим (не только при hover/drag)
+          }}
         />
         <div className="flex justify-between mt-1 text-sm">
           <span>{yearRange[0]}</span>
