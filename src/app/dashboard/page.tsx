@@ -56,15 +56,7 @@ export default async function Dashboard() {
           ))}
         </div>
 
-        <div className="mt-12 flex gap-4 justify-center">
-          {/* Кнопка админки по центру */}
-          <Link
-            href="/admin"
-            className="inline-block bg-gray-700 text-white px-8 py-4 rounded-lg text-lg font-medium hover:bg-gray-800 transition"
-          >
-            ⚙️ Админка
-          </Link>
-        </div>
+        {/* Контролы страницы (без кнопки профиля/админки — они теперь в navbar) */}
       </div>
     </div>
   );

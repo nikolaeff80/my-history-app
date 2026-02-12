@@ -28,8 +28,9 @@ export default function ProtectedRoute({ children, requiredRole = 'user' }: Prot
 
         // Check admin role if required
         if (requiredRole === 'admin') {
-          const adminEmail = process.env.NEXT_PUBLIC_ADMIN_EMAIL || process.env.ADMIN_EMAIL
-          if (user.email !== adminEmail) {
+          const adminEmail = (process.env.NEXT_PUBLIC_ADMIN_EMAIL || '').toLowerCase().trim()
+          const userEmail = (user.email || (user.user_metadata && (user.user_metadata as any).email) || '').toLowerCase().trim()
+          if (!adminEmail || userEmail !== adminEmail) {
             setError('Доступ только для администратора')
             setLoading(false)
             return

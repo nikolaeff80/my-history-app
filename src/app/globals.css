@@ -2,8 +2,8 @@
 @import 'leaflet/dist/leaflet.css';
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #eb6b34;
+  --foreground: #000000;
 }
 
 @theme inline {
@@ -13,15 +13,52 @@
   --font-mono: var(--font-geist-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+/* Force app background and black foreground everywhere, ignoring user theme */
+html,
+body,
+#__next,
+main {
+  background-color: var(--background) !important;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
+  background: var(--background) !important;
+  color: var(--foreground) !important;
   font-family: Arial, Helvetica, sans-serif;
+}
+
+/* Force text color and border color to black across the app */
+*,
+*::before,
+*::after {
+  color: var(--foreground) !important;
+  border-color: var(--foreground) !important;
+  caret-color: var(--foreground) !important;
+  -webkit-text-fill-color: var(--foreground) !important;
+}
+
+/* Inputs/buttons: keep backgrounds transparent so app bg shows, force text/borders black */
+input,
+textarea,
+select,
+button {
+  color: var(--foreground) !important;
+  border-color: var(--foreground) !important;
+  background-color: transparent !important;
+}
+
+/* SVGs and vector elements */
+svg,
+path,
+circle,
+rect,
+line,
+polyline,
+polygon {
+  stroke: var(--foreground) !important;
+  fill: var(--foreground) !important;
+}
+
+a {
+  color: var(--foreground) !important;
 }
