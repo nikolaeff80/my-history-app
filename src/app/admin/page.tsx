@@ -6,7 +6,7 @@ export default async function Admin() {
     const supabase = await createSupabaseServerClient();
     const { data: { user } } = await supabase.auth.getUser();
     
-    const rawUserEmail = user.email || (user as any)?.user_metadata?.email;
+    const rawUserEmail = (user?.email) || (user as any)?.user_metadata?.email || '';
     const adminEmail = (process.env.ADMIN_EMAIL || '').toLowerCase().trim();
     const userEmail = (rawUserEmail || '').toLowerCase().trim();
     
