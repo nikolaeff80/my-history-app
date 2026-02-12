@@ -28,7 +28,7 @@ interface Question {
 
 export default function AdminForm() {
   const supabase = createClient();
-  const [activeTab, setActiveTab] = useState<'eras' | 'lessons' | 'questions'>('eras');
+  const [activeTab, setActiveTab] = useState<'eras' | 'lessons' | 'questions' | 'news'>('eras');
   // include news tab
   const [newsContent, setNewsContent] = useState('')
 
@@ -136,7 +136,7 @@ export default function AdminForm() {
         </button>
         <button
           onClick={async () => {
-            setActiveTab('news' as any)
+            setActiveTab('news')
             // load news when switching
             const { data } = await supabase.from('site_news').select('*').order('created_at', { ascending: false }).limit(1)
             if (data && data[0]) setNewsContent(data[0].content)
