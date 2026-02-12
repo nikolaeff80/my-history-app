@@ -80,6 +80,28 @@ export default function ProfilePage() {
     load()
   }, [userId, supabase])
 
+  // Calculate progress percentage (moved from dashboard)
+  const [progressPercentage, setProgressPercentage] = useState<number | null>(null)
+  useEffect(() => {
+    async function loadProgress() {
+      if (!userId) return
+      try {
+        const { data: lessons } = await supabase.from('lessons').select('id')
+        const totalLessons = lessons?.length || 0
+        if (totalLessons === 0) {
+          setProgressPercentage(0)
+          return
+        }
+        const { data: progress } = await supabase.from('user_progress').select('lesson_id').eq('user_id', userId).eq('completed', true)
+        const completedCount = progress?.length || 0
+        setProgressPercentage(Math.round((completedCount / totalLessons) * 100))
+      } catch (err) {
+        console.error('Progress load error', err)
+      }
+    }
+    loadProgress()
+  }, [userId, supabase])
+
   if (loading) return <div className="p-6 text-center">Загрузка профиля...</div>
   if (error) {
     return (
@@ -117,6 +139,19 @@ VALUES (
         <p>Уровень: {profile.level}</p>
         <p>XP: {profile.xp}</p>
         <p>Серия: {profile.streak} дней</p>
+
+        <div className="mt-4">
+          <div className="flex justify-between mb-2">
+            <span className="text-sm text-gray-700">Прогресс обучения</span>
+            <span className="text-sm font-bold text-blue-600">{progressPercentage ?? '—'}%</span>
+          </div>
+          <div className="w-full bg-gray-200 rounded-full h-4">
+            <div
+              className="bg-blue-600 h-4 rounded-full transition-all duration-500"
+              style={{ width: `${progressPercentage ?? 0}%` }}
+            ></div>
+          </div>
+        </div>
       </div>
 
       <h2 className="mt-6 text-xl font-semibold">Достижения</h2>

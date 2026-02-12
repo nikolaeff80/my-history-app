@@ -29,6 +29,8 @@ interface Question {
 export default function AdminForm() {
   const supabase = createClient();
   const [activeTab, setActiveTab] = useState<'eras' | 'lessons' | 'questions'>('eras');
+  // include news tab
+  const [newsContent, setNewsContent] = useState('')
 
   // Data
   const [eras, setEras] = useState<Era[]>([]);
@@ -131,6 +133,18 @@ export default function AdminForm() {
           className={`px-4 py-2 font-bold ${activeTab === 'questions' ? 'text-blue-600 border-b-2 border-blue-600' : 'text-gray-500'}`}
         >
           Вопросы
+        </button>
+        <button
+          onClick={async () => {
+            setActiveTab('news' as any)
+            // load news when switching
+            const { data } = await supabase.from('site_news').select('*').order('created_at', { ascending: false }).limit(1)
+            if (data && data[0]) setNewsContent(data[0].content)
+            else setNewsContent('')
+          }}
+          className={`px-4 py-2 font-bold ${activeTab === 'news' ? 'text-blue-600 border-b-2 border-blue-600' : 'text-gray-500'}`}
+        >
+          Новости
         </button>
       </div>
 
@@ -267,6 +281,70 @@ export default function AdminForm() {
           <button onClick={addQuestion} className="bg-green-600 text-white px-6 py-2 rounded hover:bg-green-700">
             Добавить Вопрос
           </button>
+        </div>
+      )}
+
+      {/* News editor */}
+      {activeTab === 'news' && (
+        <div className="space-y-4">
+          <h2 className="text-xl font-bold">Редактировать Новости сайта</h2>
+          <p className="text-sm text-gray-500">Это поле сохраняет HTML контент. Таблица <strong>site_news</strong> ожидается в базе данных.</p>
+          <textarea
+            value={newsContent}
+            onChange={(e) => setNewsContent(e.target.value)}
+            className="w-full p-2 border rounded h-40"
+          />
+          <div className="flex gap-2">
+            <button
+              onClick={async () => {
+                try {
+                  // Try insert new row
+                  const { error: insertError } = await supabase.from('site_news').insert({ content: newsContent });
+                  if (insertError) {
+                    // fallback: try update last row
+                    const { data: rows } = await supabase.from('site_news').select('id').order('created_at', { ascending: false }).limit(1);
+                    if (rows && rows[0]) {
+                      const { error: upd } = await supabase.from('site_news').update({ content: newsContent }).eq('id', rows[0].id);
+                      if (upd) alert(upd.message)
+                      else alert('Новость обновлена')
+                    } else {
+                      alert(insertError.message)
+                    }
+                  } else {
+                    alert('Новость сохранена')
+                  }
+                } catch (err: any) {
+                  alert(err.message || 'Ошибка при сохранении')
+                }
+              }}
+              className="bg-green-600 text-white px-4 py-2 rounded"
+            >
+              Сохранить
+            </button>
+            <button
+              onClick={async () => {
+                try {
+                  const { data: rows } = await supabase.from('site_news').select('id').order('created_at', { ascending: false }).limit(1);
+                  if (rows && rows[0]) {
+                    const { error } = await supabase.from('site_news').delete().eq('id', rows[0].id);
+                    if (error) alert(error.message)
+                    else {
+                      setNewsContent('')
+                      alert('Новость удалена')
+                    }
+                  } else {
+                    setNewsContent('')
+                    alert('Нет новостей для удаления')
+                  }
+                } catch (err: any) {
+                  alert(err.message || 'Ошибка при удалении')
+                }
+              }}
+              className="bg-red-600 text-white px-4 py-2 rounded"
+            >
+              Удалить
+            </button>
+          </div>
         </div>
       )}
     </div>

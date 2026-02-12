@@ -43,6 +43,12 @@ export default async function RootLayout({
               >
                 🗺 Карта событий
               </Link>
+              <Link
+                href="/dashboard"
+                className="text-gray-600 hover:text-black transition"
+              >
+                🎓 Обучение
+              </Link>
               {isAdmin && (
                 <Link
                   href="/admin"

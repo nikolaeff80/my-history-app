@@ -10,16 +10,6 @@ export default async function Admin() {
     const adminEmail = (process.env.ADMIN_EMAIL || '').toLowerCase().trim();
     const userEmail = (rawUserEmail || '').toLowerCase().trim();
     
-    console.log('=== ADMIN PAGE DEBUG ===');
-    console.log('Raw user.email:', user.email);
-    console.log('Raw user_metadata.email:', (user as any)?.user_metadata?.email);
-    console.log('Final userEmail:', userEmail);
-    console.log('Final adminEmail:', adminEmail);
-    console.log('Are they equal?', userEmail === adminEmail);
-    console.log('!user:', !user);
-    console.log('!userEmail:', !userEmail);
-    console.log('userEmail !== adminEmail:', userEmail !== adminEmail);
-
     // Admin check (ProtectedRoute layout уже проверил базовую авторизацию)
     if (!user || !userEmail || userEmail !== adminEmail) {
       console.log('BLOCKED! Reason: !user =', !user, '| !userEmail =', !userEmail, '| userEmail !== adminEmail =', userEmail !== adminEmail);

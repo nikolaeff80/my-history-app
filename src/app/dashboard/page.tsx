@@ -28,19 +28,7 @@ export default async function Dashboard() {
           Эпохи
         </h1>
 
-        {/* Прогресс бар */}
-        <div className="mb-12 bg-white p-6 rounded-lg shadow">
-          <div className="flex justify-between mb-2">
-            <span className="text-lg font-medium text-gray-700">Твой прогресс</span>
-            <span className="text-lg font-bold text-blue-600">{progressPercentage}%</span>
-          </div>
-          <div className="w-full bg-gray-200 rounded-full h-4">
-            <div
-              className="bg-blue-600 h-4 rounded-full transition-all duration-500"
-              style={{ width: `${progressPercentage}%` }}
-            ></div>
-          </div>
-        </div>
+        {/* Прогресс бар теперь показывается в профиле пользователя */}
 
         {/* Вертикальный список эпох */}
         <div className="space-y-8">
