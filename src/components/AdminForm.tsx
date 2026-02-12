@@ -3,13 +3,36 @@
 import { createClient } from '@/utils/supabase-client';
 import { useEffect, useState } from 'react';
 
+interface Era {
+  id: string;
+  title: string;
+  description: string;
+  order_index: number;
+}
+
+interface Lesson {
+  id: string;
+  title: string;
+  content: string;
+  era_id: string;
+  order_index: number;
+}
+
+interface Question {
+  lesson_id: string;
+  question_text: string;
+  options: string[];
+  correct_answer: number;
+  order_index: number;
+}
+
 export default function AdminForm() {
   const supabase = createClient();
   const [activeTab, setActiveTab] = useState<'eras' | 'lessons' | 'questions'>('eras');
 
   // Data
-  const [eras, setEras] = useState<any[]>([]);
-  const [lessons, setLessons] = useState<any[]>([]);
+  const [eras, setEras] = useState<Era[]>([]);
+  const [lessons, setLessons] = useState<Lesson[]>([]);
 
   // Era Form
   const [eraTitle, setEraTitle] = useState('');

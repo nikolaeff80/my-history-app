@@ -5,13 +5,23 @@ import { useParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 
+interface Question {
+  id: string;
+  lesson_id: string;
+  question_text: string;
+  options: string[];
+  correct_answer: number;
+  order_index: number;
+}
+
 export default function Quiz() {
   const params = useParams<{ lessonId: string }>();
   const lessonId = params.lessonId;
 
-  const [questions, setQuestions] = useState<any[]>([]);
+  const [questions, setQuestions] = useState<Question[]>([]);
   const [current, setCurrent] = useState(0);
   const [score, setScore] = useState(0);
+  const [xpGained, setXpGained] = useState(0);
   const [finished, setFinished] = useState(false);
   const supabase = createClient();
 
@@ -37,7 +47,7 @@ export default function Quiz() {
     } else {
       setFinished(true);
 
-      // Save progress
+      // Save progress and add XP
       const { data: { user } } = await supabase.auth.getUser();
       if (user) {
         // Check if progress exists
@@ -71,6 +81,27 @@ export default function Quiz() {
           console.error('Error saving progress:', error);
           alert(`Ошибка сохранения прогресса: ${error.message}`);
         }
+
+        // Add XP: 10 points per correct answer
+        const xp = newScore * 10;
+        setXpGained(xp);
+        try {
+          const response = await fetch('/api/add-xp', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              userId: user.id,
+              xp: xp,
+              reason: `Викторина завершена: ${newScore}/${questions.length} правильных ответов`
+            })
+          });
+
+          if (!response.ok) {
+            console.error('Failed to add XP');
+          }
+        } catch (err) {
+          console.error('Error adding XP:', err);
+        }
       }
     }
   };
@@ -82,7 +113,8 @@ export default function Quiz() {
     return (
       <div className="p-8 max-w-2xl mx-auto text-center">
         <h2 className="text-3xl font-bold mb-6 text-gray-200">Викторина завершена!</h2>
-        <p className="text-2xl mb-8 text-gray-500">Ваш результат: {score} из {questions.length}</p>
+        <p className="text-2xl mb-4 text-gray-500">Ваш результат: {score} из {questions.length}</p>
+        <p className="text-xl mb-8 text-green-600 font-semibold">+{xpGained} XP 🎉</p>
         <Link href="/dashboard" className="bg-blue-600 text-white px-6 py-3 rounded inline-block hover:bg-blue-700">
           ← Вернуться к эпохам
         </Link>

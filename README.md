@@ -1,36 +1,239 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 📚 History Learning App
 
-## Getting Started
+Интерактивное веб-приложение для изучения истории с викторинами, системой прогресса и исторической картой.
 
-First, run the development server:
+## 🚀 Технологический стек
+
+- **Frontend**: Next.js 16, React 19, TypeScript
+- **Styling**: Tailwind CSS
+- **Backend**: Supabase (PostgreSQL)
+- **Authentication**: Supabase Auth
+- **Maps**: Leaflet + react-leaflet
+- **Components**: Framer Motion, rc-slider, rc-tooltip
+
+## 📋 Требования
+
+- Node.js 18+
+- npm или yarn
+- Supabase проект ([создать](https://supabase.com))
+
+## 🔧 Установка
+
+### 1. Клонирование репозитория
+
+```bash
+git clone <ваш-репозиторий>
+cd my-history-app
+```
+
+### 2. Установка зависимостей
+
+```bash
+npm install
+```
+
+### 3. Инициализация Supabase БД
+
+**[ВАЖНО] Смотрите [SUPABASE_SETUP.md](./SUPABASE_SETUP.md) для подробных инструкций**
+
+Быстро:
+```bash
+supabase db push
+```
+
+Или вручную в [Supabase Dashboard](https://supabase.com/dashboard):
+1. SQL Editor → New query
+2. Вставить содержимое `supabase/migrations/init_database.sql`
+3. Run
+
+### 4. Настройка переменных окружения
+
+Создайте файл `.env.local`:
+
+```env
+NEXT_PUBLIC_SUPABASE_URL=https://xxxxx.supabase.co
+NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJxxxxxxx
+ADMIN_EMAIL=admin@example.com
+```
+
+Получить значения:
+- Откройте [Supabase Dashboard](https://supabase.com/dashboard)
+- Project Settings → API
+- Скопируйте `URL` и `anon key`
+
+### 5. Запуск приложения
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Откройте [http://localhost:3000](http://localhost:3000)
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+---
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## 📖 Структура проекта
 
-## Learn More
+```
+src/
+├── app/
+│   ├── page.tsx              # Главная страница (вход/регистрация)
+│   ├── dashboard/            # Дашборд с эпохами
+│   ├── lesson/[eraId]/       # Уроки по эпохе
+│   ├── quiz/[lessonId]/      # Викторина
+│   ├── map/                  # Историческая карта
+│   ├── admin/                # Админка (только для admin@example.com)
+│   └── profiles/[user_id]/   # Профиль пользователя
+├── components/
+│   ├── LoginForm.tsx         # Форма входа/регистрации
+│   ├── AdminForm.tsx         # форма управления контентом
+│   ├── ProtectedRoute.tsx    # Защита от неавторизованных
+│   └── map/                  # Компоненты карты
+└── utils/
+    ├── supabase-client.ts    # Клиент для браузера
+    └── supabase-server.ts    # Клиент для сервера
+```
 
-To learn more about Next.js, take a look at the following resources:
+---
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## 🎮 Функции
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+### ✅ Реализовано
+- ✅ Регистрация и вход пользователей (email/пароль, Google OAuth)
+- ✅ Защита маршрутов (неавторизованные пользователи перенаправляются на вход)
+- ✅ Дашборд с эпохами и прогрессом
+- ✅ Уроки с содержанием
+- ✅ Викторины с подсчетом очков
+- ✅ XP система (+10 XP за правильный ответ на вопрос)
+- ✅ Профили пользователей
+- ✅ Админка для управления контентом
+- ✅ Историческая карта с битвами (Leaflet)
+- ✅ Система достижений (структура готова)
 
-## Deploy on Vercel
+### 🔄 В разработке
+- 🔄 RLS политики в Supabase (безопасность)
+- 🔄 Система streak (дневная активность)
+- 🔄 Расширенная система достижений
+- 🔄 Рейтинг лидеров
+- 🔄 Мобильное приложение
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+---
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## 🔐 Авторизация и защита
+
+**Все страницы кроме главной требуют авторизации:**
+
+| Маршрут | Требование |
+|---------|-----------|
+| `/` | Открыт для всех |
+| `/dashboard` | Авторизованный пользователь |
+| `/lesson/...` | Авторизованный пользователь |
+| `/quiz/...` | Авторизованный пользователь |
+| `/map` | Авторизованный пользователь |
+| `/profiles/[user_id]` | Авторизованный пользователь |
+| `/admin` | Только admin@example.com |
+
+**Компонент `ProtectedRoute`** автоматически:
+- Проверяет авторизацию
+- Показывает форму входа если не авторизован
+- Проверяет роль для админики
+
+---
+
+## 🗄️ Таблицы БД
+
+Смотрите [SUPABASE_SETUP.md](./SUPABASE_SETUP.md#структура-таблиц) для подробного описания.
+
+Основные таблицы:
+- `eras` - Эпохи истории
+- `lessons` - Уроки
+- `questions` - Вопросы викторин
+- `user_profiles` - Профили пользователей
+- `user_progress` - Прогресс пользователя
+- `achievements` - Достижения
+- `user_achievements` - Достижения пользователя
+- `historical_battles` - Битвы на карте
+
+---
+
+## 🐛 Решение проблем
+
+### "Профиль не создан" ошибка
+
+Это нормально! Профили автоматически не создаются. Создайте вручную:
+
+```sql
+INSERT INTO user_profiles (id, level, xp, streak)
+VALUES ('YOUR_USER_ID', 1, 0, 0);
+```
+
+Где `YOUR_USER_ID` - UUID из таблицы `auth.users`.
+
+### "406 PGRST116" ошибка
+
+Означает что запись не найдена. Проверьте:
+1. Таблица существует (выполнить миграцию)
+2. Профиль создан для пользователя
+3. Нет RLS политик блокирующих доступ
+
+---
+
+## 📝 Примеры API
+
+### Добавить XP пользователю
+
+```bash
+curl -X POST http://localhost:3000/api/add-xp \
+  -H "Content-Type: application/json" \
+  -d '{
+    "userId": "user-uuid",
+    "xp": 50,
+    "reason": "Quiz completed"
+  }'
+```
+
+### Получить битвы за период
+
+```bash
+curl "http://localhost:3000/api/battles?from=1000&to=1900"
+```
+
+---
+
+## 💡 Разработка
+
+### Запуск в режиме разработки
+
+```bash
+npm run dev
+```
+
+### Проверка типов
+
+```bash
+npx tsc --noEmit
+```
+
+### Линтинг
+
+```bash
+npm run lint
+```
+
+### Build для production
+
+```bash
+npm run build
+npm run start
+```
+
+---
+
+## 📧 Контакты
+
+Для вопросов или предложений создавайте Issues.
+
+---
+
+## 📄 Лицензия
+
+MIT

@@ -32,6 +32,14 @@ L.Icon.Default.mergeOptions({
 export default function LeafletMap({ battles }: Props) {
   const [selectedBattle, setSelectedBattle] = useState<Battle | null>(null)
 
+  // Validate battle coordinates
+  const validBattles = battles.filter(b => 
+    typeof b.latitude === 'number' && 
+    typeof b.longitude === 'number' &&
+    !isNaN(b.latitude) &&
+    !isNaN(b.longitude)
+  )
+
   return (
     <div className="flex gap-4">
       <div className="flex-1">
@@ -45,7 +53,7 @@ export default function LeafletMap({ battles }: Props) {
             url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
           />
 
-          {battles.map(b => (
+          {validBattles.map(b => (
             <Marker
               key={b.id}
               position={[b.latitude, b.longitude]}

@@ -5,13 +5,11 @@ export const dynamic = 'force-dynamic';
 
 export default async function Dashboard() {
   const supabase = await createSupabaseServerClient();
-  const { data: eras } = await supabase.from('eras').select('*').order('order_index');
-
-  /* Fetch data */
+  
   const { data: { user } } = await supabase.auth.getUser();
 
-  // We need the count of lessons. 'count' option in select is better but for now let's just fetch IDs to be safe with existing types if any.
-  // Actually, let's just fetch all lessons.
+  const { data: eras } = await supabase.from('eras').select('*').order('order_index');
+
   const { data: lessons } = await supabase.from('lessons').select('id');
   const totalLessons = lessons?.length || 0;
 
@@ -58,13 +56,13 @@ export default async function Dashboard() {
           ))}
         </div>
 
-        {/* Кнопка админки по центру */}
-        <div className="mt-16 text-center">
+        <div className="mt-12 flex gap-4 justify-center">
+          {/* Кнопка админки по центру */}
           <Link
             href="/admin"
             className="inline-block bg-gray-700 text-white px-8 py-4 rounded-lg text-lg font-medium hover:bg-gray-800 transition"
           >
-            Админка (только для тебя)
+            ⚙️ Админка
           </Link>
         </div>
       </div>

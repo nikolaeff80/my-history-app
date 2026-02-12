@@ -7,11 +7,12 @@ export default async function Admin() {
 
   const adminEmail = process.env.ADMIN_EMAIL;
 
+  // Admin check (ProtectedRoute layout уже проверил базовую авторизацию)
   if (!user || !user.email || user.email !== adminEmail) {
     return (
       <div className="p-8 text-center">
         <p className="text-red-600 font-bold mb-2">Доступ запрещён</p>
-        <p className="text-sm text-gray-500">Вы вошли как: {user?.email || 'Гость'}. Требуется администратор.</p>
+        <p className="text-sm text-gray-500">Требуется администратор.</p>
       </div>
     );
   }
