@@ -65,13 +65,13 @@ export default function LeafletMap({ battles }: Props) {
         </MapContainer>
       </div>
 
-      <div className="w-80 bg-gray-900 p-4 shadow-md overflow-y-auto max-h-[600px]">
+      <div className="w-80 bg-gray-100 p-4 shadow-md overflow-y-auto max-h-[600px]">
         {selectedBattle ? (
           <>
-            <h3 className="font-bold text-lg">
+            <h3 className="font-bold text-lg text-gray-800">
               {selectedBattle.title} ({selectedBattle.year})
             </h3>
-            <p className="mt-2">{selectedBattle.description}</p>
+            <p className="mt-2 text-gray-700">{selectedBattle.description}</p>
             {selectedBattle.video_url && (
               <iframe
                 className="mt-2"
