@@ -62,3 +62,44 @@ polygon {
 a {
   color: var(--foreground) !important;
 }
+
+/* Event ticker styles */
+.ticker-container {
+  overflow: hidden;
+}
+.ticker-viewport {
+  height: 1.25rem;
+  display: flex;
+  align-items: center;
+  min-height: 20px;
+}
+.ticker-item {
+  display: inline-block;
+  white-space: nowrap;
+  /* --ticker-duration controls the full cycle: 0.5s in, 5s hold, 0.5s out = 6000ms */
+  animation: ticker-anim var(--ticker-duration, 6000ms) ease-in-out infinite;
+  will-change: transform, opacity;
+}
+
+@keyframes ticker-anim {
+  /*
+    Timing assumes: in = 500ms, hold = 5000ms, out = 500ms (total 6000ms)
+    Percentages: inPct = 500/6000 = 8.333%, outStart = (500+5000)/6000 = 91.666%
+  */
+  0% {
+    opacity: 0;
+    transform: translateY(100%);
+  }
+  8.333% {
+    opacity: 1;
+    transform: translateY(0%);
+  }
+  91.666% {
+    opacity: 1;
+    transform: translateY(0%);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-100%);
+  }
+}
