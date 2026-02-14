@@ -27,8 +27,9 @@ export default async function Home() {
   ];
 
   return (
-    <main className="flex flex-col items-center justify-start min-h-screen p-8">
+    <main className="flex flex-col items-center justify-start min-h-screen p-8 page-bg">
       <h1 className="text-4xl font-bold mb-6">Интерактивное изучение истории</h1>
+      <h2 className="text-xl font-bold mb-4">Короткие истории. Реальная история. 5 минут в день.</h2>
 
       {/* Leaderboard */}
       <section className="w-full max-w-3xl bg-bottom p-4 rounded shadow-2xl mb-6">
@@ -53,16 +54,35 @@ export default async function Home() {
       <EventTicker messages={messages} />
 
       {/* News */}
-      <section className="w-full max-w-3xl bg-bottom p-4 rounded shadow-2xl mb-8">
-        <div className="flex justify-between items-center mb-3">
-          <h2 className="text-xl font-semibold">Новости</h2>
-        </div>
-        <div className="text-gray-700">
-          {news ? (
-            <div dangerouslySetInnerHTML={{ __html: news.content }} />
-          ) : (
-            <div className="text-gray-500">Нет новостей. Добавьте новость в Админке.</div>
-          )}
+      <section className="w-full max-w-3xl bg-bottom p-6 rounded shadow-2xl mb-8">
+        <h2 className="text-xl font-semibold mb-6">Новости</h2>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+          {/* Левая колонка: динамические новости из БД */}
+          <div className="text-gray-700">
+            {news ? (
+              <div dangerouslySetInnerHTML={{ __html: news.content }} />
+            ) : (
+              <div className="text-gray-500">
+                Нет новостей. Добавьте новость в Админке.
+              </div>
+            )}
+          </div>
+
+          {/* Правая колонка: новый блок (здесь пример со статическим roadmap) */}
+          <div className="bg-bottom">
+            <h4 className="font-bold mb-4 text-gray-800">Изучай быстро и с удовольствием</h4>
+            <ul className="space-y-1 text-gray-700 list-disc list-inside">
+              <li>Шортсы на карте событий</li>
+              <li>Хронология событий</li>
+              <li>Реальная история</li>
+              <li>Настоящая драма</li>
+              <li>Ни капли вымысла</li>
+              <li>Быстрые уроки</li>
+              <li>Максимальный эффект</li>
+              <li>Чистое развлечение</li>
+            </ul>
+          </div>
         </div>
       </section>
 

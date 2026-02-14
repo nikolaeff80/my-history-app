@@ -103,3 +103,25 @@ a {
     transform: translateY(-100%);
   }
 }
+
+/* Page background image class — place your PNG at /public/images/bg.png */
+/* .page-bg {
+  background: var(--background) url('/images/bg.png') center/cover no-repeat !important;
+  background-size: cover !important;
+  background-position: center !important;
+  background-repeat: no-repeat !important;
+} */
+
+/* .page-bg {
+  background-image: url('/images/bg.png');
+  background-size: contain;
+  background-position: center top;
+  background-repeat: no-repeat;
+} */
+
+.page-bg {
+  background-image: url('/images/bg.png');
+  background-size: 165% auto;
+  background-position: center 75%;
+  background-repeat: no-repeat;
+}
